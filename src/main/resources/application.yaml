@@ -1,3 +1,10 @@
+spring:
+  main:
+    log-startup-info: false
+  output.ansi.enabled: ALWAYS
+  config:
+      import: "classpath:quiz/questions.yaml"
+
 spring-quiz:
   title: "Тест по Spring Framework"
 

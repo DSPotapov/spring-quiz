@@ -18,6 +18,7 @@ public class QuizLog implements Iterable<QuizLog.Entry> {
 
     /**
      * Метод для записи ответа на очередной вопрос в лог прохождения квиза
+     *
      * @param number   номер вопроса
      * @param question вопрос
      * @param answer   ответ пользователя
@@ -43,6 +44,7 @@ public class QuizLog implements Iterable<QuizLog.Entry> {
     public long successful() {
         return log.stream().filter(Entry::isSuccessful).count();
     }
+
     /**
      * Клас, представляющий запись лога прохождения квиза
      */
