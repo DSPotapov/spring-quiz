@@ -1,5 +1,7 @@
 package ru.yandex.practicum.quiz.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.quiz.config.QuizConfig;
@@ -11,6 +13,9 @@ import java.util.Scanner;
 
 @Component
 public class ConsoleUI {
+
+    private static final Logger logger = LoggerFactory.getLogger(ConsoleUI.class);
+
     private final Scanner input;
     private final QuizLog quizLogger;
     private final List<Question> questions;
@@ -24,9 +29,10 @@ public class ConsoleUI {
         this.quizLogger = new QuizLog(questions.size());
     }
 
-
     public QuizLog startQuiz() {
         System.out.println("\nЗдравствуйте, приступаем к тесту " + quizTitle + "\n");
+
+        logger.debug("Начинаем квиз. Количество вопросов: {}", questions.size());
 
         for (int questionIdx = 0; questionIdx < questions.size(); questionIdx++) {
             Question question = questions.get(questionIdx);
@@ -37,6 +43,7 @@ public class ConsoleUI {
     }
 
     private void processQuestion(int questionNumber, Question question) {
+        logger.trace("Выводим вопрос №{}, количество попыток: {}", questionNumber, question.getAttempts());
 
         for (int attemptIdx = 0; attemptIdx < question.getAttempts(); attemptIdx++) {
             System.out.println("\n");

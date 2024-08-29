@@ -1,18 +1,23 @@
 package ru.yandex.practicum.quiz.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.quiz.config.AppConfig;
+import ru.yandex.practicum.quiz.config.AppConfig.ReportSettings;
+import ru.yandex.practicum.quiz.config.AppConfig.ReportOutputSettings;
+import ru.yandex.practicum.quiz.config.AppConfig.ReportOutputMode;
+import ru.yandex.practicum.quiz.config.AppConfig.ReportMode;
 import ru.yandex.practicum.quiz.model.QuizLog;
 
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+@Slf4j
 @Component
 public class ReportGenerator {
     private final String reportTitle;
-    private final AppConfig.ReportSettings reportSettings;
+    private final ReportSettings reportSettings;
 
     public ReportGenerator(AppConfig appConfig) {
         this.reportTitle = appConfig.getTitle();
@@ -22,13 +27,15 @@ public class ReportGenerator {
     public void generate(QuizLog quizLog) {
         // если генерация отчёта отключена, завершаем метод
         if (!reportSettings.isEnabled()) {
+            log.debug("Вывод отчёта отключён, генерация отчёта прекращена");
             return;
         }
 
-        AppConfig.ReportOutputSettings outputSettings = reportSettings.getOutput();
+        ReportOutputSettings outputSettings = reportSettings.getOutput();
+        log.trace("Отчёт будет выведен: {}", outputSettings.getMode());
         try {
             // Создаём объект PrintWriter, выводящий отчет в консоль
-            boolean isConsole = outputSettings.getMode().equals(AppConfig.ReportOutputMode.CONSOLE);
+            boolean isConsole = outputSettings.getMode().equals(ReportOutputMode.CONSOLE);
             try (PrintWriter writer = (isConsole ?
                     new PrintWriter(System.out) :
                     new PrintWriter(outputSettings.getPath()))
@@ -37,7 +44,7 @@ public class ReportGenerator {
                 write(quizLog, writer);
             }
         } catch (Exception exception) {
-            System.out.println("При генерации отчёта произошла ошибка: " + exception.getMessage());
+            log.warn("При генерации отчёта произошла ошибка: ", exception);
         }
     }
 
@@ -45,7 +52,7 @@ public class ReportGenerator {
         writer.println("Отчет о прохождении теста " + reportTitle + "\n");
         for (QuizLog.Entry entry : quizLog) {
 
-            if (reportSettings.getMode().equals(AppConfig.ReportMode.VERBOSE)) {
+            if (reportSettings.getMode().equals(ReportMode.VERBOSE)) {
                 writeVerbose(writer, entry);
             } else {
                 writeConcise(writer, entry);

@@ -17,8 +17,7 @@ public class AppConfig {
     @Setter
     @Getter
     @ToString
-    public static class ReportSettings {
-        private boolean enabled;
+    public static class ReportSettings{        private boolean enabled;
         private ReportMode mode;
         private ReportOutputSettings output;
     }
